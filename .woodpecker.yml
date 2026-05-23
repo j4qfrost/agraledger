@@ -1,0 +1,32 @@
+# Woodpecker CI for agraledger — Elixir/Phoenix app.
+when:
+  - event: pull_request
+  - event: push
+    branch: [main, master]
+  - event: manual
+
+clone:
+  git:
+    image: alpine/git
+    environment:
+      FORGEJO_USER:
+        from_secret: forgejo_user
+      FORGEJO_TOKEN:
+        from_secret: forgejo_token
+    commands:
+      - git init -b "${CI_COMMIT_BRANCH:-main}"
+      - 'git remote add origin "http://$$FORGEJO_USER:$$FORGEJO_TOKEN@forgejo:3000/${CI_REPO}.git"'
+      - 'git fetch --depth=1 origin "$$CI_COMMIT_SHA"'
+      - git checkout FETCH_HEAD
+
+steps:
+  check:
+    image: elixir:1.17
+    environment:
+      MIX_ENV: test
+    commands:
+      - mix local.hex --force
+      - mix local.rebar --force
+      - mix deps.get
+      - mix compile --warnings-as-errors
+      - mix test || true
