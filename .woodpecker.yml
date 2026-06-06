@@ -13,9 +13,11 @@ clone:
         from_secret: forgejo_user
       FORGEJO_TOKEN:
         from_secret: forgejo_token
+      FORGEJO_HOST:
+        from_secret: forgejo_host
     commands:
       - git init -b "${CI_COMMIT_BRANCH:-main}"
-      - 'git remote add origin "http://$$FORGEJO_USER:$$FORGEJO_TOKEN@forgejo:3000/${CI_REPO}.git"'
+      - 'git remote add origin "http://$$FORGEJO_USER:$$FORGEJO_TOKEN@$${FORGEJO_HOST:-forgejo:3000}/${CI_REPO}.git"'
       - 'git fetch --depth=1 origin "$$CI_COMMIT_SHA"'
       - git checkout FETCH_HEAD
 
