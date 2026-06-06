@@ -9,6 +9,13 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
+## Continuous integration
+
+CI runs on Woodpecker (`.woodpecker.yml`). The clone step reads the following secrets:
+
+* `forgejo_user` / `forgejo_token` — credentials for the Forgejo clone.
+* `forgejo_host` — Forgejo Git host (and port) used to construct the clone URL. Optional; defaults to `forgejo:3000` when the secret is unset.
+
 ## Learn more
 
 * Official website: https://www.phoenixframework.org/
