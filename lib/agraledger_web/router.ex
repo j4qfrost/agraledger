@@ -62,6 +62,31 @@ defmodule AgraledgerWeb.Router do
 
   ## Application routes
 
+  # Bookkeeper writes.
+  #
+  # Defined BEFORE the viewer scope on purpose: the static `/new` segments must
+  # be matched ahead of the viewer scope's `/:id` show routes, otherwise a
+  # request to e.g. `/vendors/new` is captured by `/vendors/:id` (id = "new")
+  # and crashes on the id cast.
+  scope "/", AgraledgerWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :bookkeeper,
+      on_mount: [
+        {AgraledgerWeb.UserAuth, :require_authenticated},
+        {AgraledgerWeb.RoleHelper, :require_bookkeeper}
+      ] do
+      live "/vendors/new", VendorLive.Form, :new
+      live "/vendors/:id/edit", VendorLive.Form, :edit
+      live "/contacts/new", ContactLive.Form, :new
+      live "/contacts/:id/edit", ContactLive.Form, :edit
+      live "/products/new", ProductLive.Form, :new
+      live "/products/:id/edit", ProductLive.Form, :edit
+      live "/ledger/entries/new", JournalEntryLive.Form, :new
+      live "/ledger/entries/:id/edit", JournalEntryLive.Form, :edit
+    end
+  end
+
   # Read-only — viewers, bookkeepers, admins
   scope "/", AgraledgerWeb do
     pipe_through [:browser, :require_authenticated_user]
@@ -85,26 +110,6 @@ defmodule AgraledgerWeb.Router do
       live "/reports/trial-balance", ReportLive.TrialBalance, :index
       live "/reports/balance-sheet", ReportLive.BalanceSheet, :index
       live "/reports/income-statement", ReportLive.IncomeStatement, :index
-    end
-  end
-
-  # Bookkeeper writes
-  scope "/", AgraledgerWeb do
-    pipe_through [:browser, :require_authenticated_user]
-
-    live_session :bookkeeper,
-      on_mount: [
-        {AgraledgerWeb.UserAuth, :require_authenticated},
-        {AgraledgerWeb.RoleHelper, :require_bookkeeper}
-      ] do
-      live "/vendors/new", VendorLive.Form, :new
-      live "/vendors/:id/edit", VendorLive.Form, :edit
-      live "/contacts/new", ContactLive.Form, :new
-      live "/contacts/:id/edit", ContactLive.Form, :edit
-      live "/products/new", ProductLive.Form, :new
-      live "/products/:id/edit", ProductLive.Form, :edit
-      live "/ledger/entries/new", JournalEntryLive.Form, :new
-      live "/ledger/entries/:id/edit", JournalEntryLive.Form, :edit
     end
   end
 
