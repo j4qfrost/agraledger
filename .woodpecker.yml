@@ -19,14 +19,29 @@ clone:
       - 'git fetch --depth=1 origin "$$CI_COMMIT_SHA"'
       - git checkout FETCH_HEAD
 
+services:
+  database:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: agraledger_test
+
 steps:
   check:
     image: elixir:1.17
     environment:
       MIX_ENV: test
+      # Point the test Repo at the `database` service container.
+      # config/test.exs reads PGHOST/PGUSER/PGPASSWORD/PGPORT.
+      PGHOST: database
+      PGUSER: postgres
+      PGPASSWORD: postgres
     commands:
       - mix local.hex --force
       - mix local.rebar --force
       - mix deps.get
       - mix compile --warnings-as-errors
-      - mix test || true
+      # The `test` alias runs ecto.create + ecto.migrate first. No `|| true`:
+      # a failing suite must fail the pipeline.
+      - mix test
