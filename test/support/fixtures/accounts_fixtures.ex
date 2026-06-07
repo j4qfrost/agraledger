@@ -41,6 +41,18 @@ defmodule Agraledger.AccountsFixtures do
     user
   end
 
+  @doc """
+  Updates a user's role via the admin changeset, returning the reloaded user.
+  """
+  def set_user_role(user, role) do
+    {:ok, user} =
+      user
+      |> Agraledger.Accounts.User.admin_changeset(%{"role" => to_string(role)})
+      |> Agraledger.Repo.update()
+
+    user
+  end
+
   def user_scope_fixture do
     user = user_fixture()
     user_scope_fixture(user)

@@ -48,7 +48,10 @@ defmodule Agraledger.SupplyChainTest do
 
     test "update_supply_link/2 updates the supply_link" do
       link = supply_link_fixture()
-      assert {:ok, %SupplyLink{} = updated} = SupplyChain.update_supply_link(link, %{active: false})
+
+      assert {:ok, %SupplyLink{} = updated} =
+               SupplyChain.update_supply_link(link, %{active: false})
+
       refute updated.active
     end
 
