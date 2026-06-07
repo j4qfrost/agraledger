@@ -57,6 +57,24 @@ defmodule AgraledgerWeb.ConnCase do
   end
 
   @doc """
+  Setup helper that registers and logs in a user with the given role.
+
+  The session token is tied to the user id and the role is read fresh from
+  the database at mount, so promoting the user after login is sufficient.
+  """
+  def register_and_log_in_user_with_role(context, role) do
+    %{user: user} = result = register_and_log_in_user(context)
+    user = Agraledger.AccountsFixtures.set_user_role(user, role)
+    %{result | user: user, scope: Agraledger.Accounts.Scope.for_user(user)}
+  end
+
+  def register_and_log_in_bookkeeper(context),
+    do: register_and_log_in_user_with_role(context, :bookkeeper)
+
+  def register_and_log_in_admin(context),
+    do: register_and_log_in_user_with_role(context, :admin)
+
+  @doc """
   Logs the given `user` into the `conn`.
 
   It returns an updated `conn`.

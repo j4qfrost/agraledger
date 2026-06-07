@@ -27,8 +27,8 @@ defmodule AgraledgerWeb.VendorLive.Index do
         <:col :let={{_id, vendor}} label="Tax">{vendor.tax_id}</:col>
         <:col :let={{_id, vendor}} label="Website">{vendor.website}</:col>
         <:col :let={{_id, vendor}} label="Notes">{vendor.notes}</:col>
-        <:col :let={{_id, vendor}} label="Tags">{vendor.tags}</:col>
-        <:col :let={{_id, vendor}} label="Metadata">{vendor.metadata}</:col>
+        <:col :let={{_id, vendor}} label="Tags">{Enum.join(vendor.tags, ", ")}</:col>
+        <:col :let={{_id, vendor}} label="Metadata">{Jason.encode!(vendor.metadata)}</:col>
         <:action :let={{_id, vendor}}>
           <div class="sr-only">
             <.link navigate={~p"/vendors/#{vendor}"}>Show</.link>
